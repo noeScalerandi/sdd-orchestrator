@@ -1,3 +1,30 @@
+# ============================================================================
+# WHAT DOES THIS AGENT DO?
+# ============================================================================
+# This workflow acts as an automated quality guardian for your repository,
+# enforcing best practices and maintaining code health across any project type.
+#
+# 🛡️ Gitleaks (Security Guard):
+#    Acts as your bodyguard. If anyone (you or a collaborator) accidentally
+#    commits a file containing real passwords, API tokens, or sensitive credentials,
+#    this agent stops the process and alerts you before it becomes a security incident.
+#
+# 🔧 Super-Linter Slim (Swiss Army Knife):
+#    Your universal code quality tool. Regardless of whether your repo contains
+#    Python, Node.js, or just documentation, this linter will check for formatting
+#    errors in configuration files (.yaml, .json), bash scripts, Dockerfiles, and more.
+#
+# 📋 Structure Check (Friendly Reminder):
+#    A minimalist script that gently "reminds" you if you're missing essential files
+#    like README.md, LICENSE, or .gitignore. A repository without these files
+#    doesn't follow industry best practices.
+#
+# 📝 Markdown Lint (Documentation Perfectionist):
+#    Because poorly formatted documentation reflects poorly on your project.
+#    This agent ensures your titles, lists, and formatting in README files
+#    look professional and polished.
+# ============================================================================
+
 name: "Agent - Universal Best Practices"
 
 on:
