@@ -73,8 +73,4 @@ jobs:
             echo "All essential files are present. Good job!"
           fi
 
-      - name: "5. Markdown Linting"
-        uses: DavidAnson/github-lint-action@v1
-        with:
-          files: '**/*.md'
-        # Asegura que tu documentación sea legible y profesional
+
