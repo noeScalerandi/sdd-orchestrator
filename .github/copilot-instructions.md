@@ -25,4 +25,21 @@ The current application structure is:
 ├── config/
 │   └── settings.json
 ├── requirements.txt
-└── main.py                         <-- Entry point
+
+
+```
+
+---
+
+## Subagents
+
+Subagents are specialized AI assistants that can be invoked to handle specific types of tasks. 
+
+When users call a simulated subagent, it will look for the corresponding markdown file, `.github/subagents/{subagent}.md`, and execute its contents as the block of operations.
+
+For example, if the user instructs `Call planner subagent to plan the refactoring`, you have to look for the markdown file, `.github/subagents/planner.md`, and execute its contents as the block of operations.
+
+# AI Agent Reference Guide
+
+**Purpose:** This document serves as the primary entry point for AI agents. It provides a comprehensive overview of the project structure, development guidelines, and links to specialized documentation for different aspects of the system.
+
