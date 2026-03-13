@@ -25,6 +25,9 @@ jobs:
           # Copiamos los agentes desde nuestra carpeta de templates
           cp templates/*.yml target-repo/.github/workflows/
           
+          # Eliminamos el archivo injector.yml del nuevo repositorio
+          rm -f target-repo/.github/workflows/injector.yml
+          
           # Subimos los cambios al nuevo repositorio
           cd target-repo
           git config user.name "Central Agent Manager"
