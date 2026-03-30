@@ -98,4 +98,4 @@ jobs:
           - Created custom README.md
           - Marked repository as initialized
           - Removed initialization workflow" || exit 0
-          git push
+
