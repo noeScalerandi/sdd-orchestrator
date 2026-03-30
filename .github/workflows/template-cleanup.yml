@@ -2,8 +2,7 @@ name: "Template Cleanup"
 on:
   push:
     branches: [main, master]
-  repository:
-    types: [created]
+  create:
   workflow_dispatch:
 
 permissions:
