@@ -1,0 +1,91 @@
+# ============================================================================
+# VALIDACIÓN DE DESCRIPCIÓN DE PULL REQUESTS
+# ============================================================================
+# Este workflow verifica que todos los PRs tengan una descripción adecuada
+# antes de ser mergeados. Una buena descripción es fundamental para:
+#   - Facilitar la revisión de código
+#   - Mantener el historial del proyecto comprensible
+#   - Proveer contexto a los agentes de IA que trabajan en el repo
+#
+# Criterios de validación:
+#   - La descripción no debe estar vacía
+#   - Debe tener al menos 10 caracteres
+#   - Se sugiere (sin fallar) incluir secciones "## What" y "## Why"
+# ============================================================================
+
+name: "PR Description Check"
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  check-description:
+    name: "Validar descripción del PR"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Verificar descripción"
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+            const trimmed = body.trim();
+
+            // Validación obligatoria: descripción mínima
+            if (trimmed.length < 10) {
+              const suggestions = `
+            ## ❌ Descripción de PR insuficiente
+
+            Este PR necesita una descripción antes de poder ser mergeado.
+
+            ### ¿Qué incluir?
+
+            \`\`\`markdown
+            ## What
+            Breve descripción de los cambios realizados.
+
+            ## Why
+            Motivación o contexto del cambio (issue relacionado, necesidad de negocio, etc.).
+
+            ## How to test
+            Pasos para verificar que los cambios funcionan correctamente.
+            \`\`\`
+
+            > 💡 Una buena descripción acelera las revisiones y ayuda a los agentes de IA a entender el contexto.
+            `;
+
+              // Comentar en el PR con sugerencias
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: suggestions,
+              });
+
+              core.setFailed(
+                `La descripción del PR está vacía o es muy corta (${trimmed.length} caracteres). ` +
+                'Se requieren al menos 10 caracteres.'
+              );
+              return;
+            }
+
+            // Validación opcional: secciones recomendadas (solo warning)
+            const hasWhat = /^#{1,3}\s+what/im.test(trimmed);
+            const hasWhy  = /^#{1,3}\s+why/im.test(trimmed);
+
+            if (!hasWhat || !hasWhy) {
+              const missing = [];
+              if (!hasWhat) missing.push('`## What`');
+              if (!hasWhy)  missing.push('`## Why`');
+
+              core.warning(
+                `Se recomienda incluir las secciones ${missing.join(' y ')} en la descripción del PR ` +
+                'para mejorar la trazabilidad y facilitar las revisiones.'
+              );
+            }
+
+            console.log(`✅ Descripción válida (${trimmed.length} caracteres).`);

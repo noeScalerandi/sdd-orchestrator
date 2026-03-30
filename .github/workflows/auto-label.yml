@@ -1,0 +1,111 @@
+# ============================================================================
+# ETIQUETADO AUTOMÁTICO DE PULL REQUESTS
+# ============================================================================
+# Este workflow clasifica automáticamente los PRs según los archivos
+# modificados, facilitando la navegación y el filtrado en el backlog.
+#
+# Etiquetas aplicadas:
+#   - documentation → cambios en *.md y docs/**
+#   - tests         → cambios en archivos de test
+#   - ci            → cambios en .github/**
+#   - dependencies  → cambios en archivos de dependencias
+#   - config        → cambios en archivos de configuración en la raíz
+# ============================================================================
+
+name: "Auto Label"
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    name: "Etiquetar PR automáticamente"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Etiquetar según archivos modificados"
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            const filenames = files.map(f => f.filename);
+            const labelsToAdd = new Set();
+
+            // Reglas de etiquetado
+            const rules = [
+              {
+                label: 'documentation',
+                patterns: [/\.md$/i, /^docs\//],
+              },
+              {
+                label: 'tests',
+                patterns: [/\/tests?\//, /\.test\.[^/]+$/, /\.spec\.[^/]+$/],
+              },
+              {
+                label: 'ci',
+                patterns: [/^\.github\//],
+              },
+              {
+                label: 'dependencies',
+                patterns: [
+                  /^package\.json$/, /^requirements\.txt$/, /^go\.mod$/,
+                  /^Cargo\.toml$/, /\.lock$/,
+                ],
+              },
+              {
+                label: 'config',
+                patterns: [
+                  /^[^/]+\.(yml|yaml|json|toml)$/,
+                ],
+              },
+            ];
+
+            for (const rule of rules) {
+              if (filenames.some(f => rule.patterns.some(p => p.test(f)))) {
+                labelsToAdd.add(rule.label);
+              }
+            }
+
+            if (labelsToAdd.size === 0) return;
+
+            // Asegurarse de que las etiquetas existen antes de aplicarlas
+            for (const label of labelsToAdd) {
+              try {
+                await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label,
+                });
+              } catch (e) {
+                // La etiqueta no existe, la creamos con colores predeterminados
+                const colors = {
+                  documentation: '0075ca',
+                  tests: 'e4e669',
+                  ci: '000000',
+                  dependencies: '0366d6',
+                  config: 'f29513',
+                };
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label,
+                  color: colors[label] || 'ededed',
+                });
+              }
+            }
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: [...labelsToAdd],
+            });

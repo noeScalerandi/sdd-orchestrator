@@ -1,0 +1,68 @@
+# ============================================================================
+# LIMPIEZA DE ISSUES Y PULL REQUESTS INACTIVOS
+# ============================================================================
+# Este workflow marca automáticamente como "stale" (obsoleto) los issues y
+# PRs que llevan tiempo sin actividad, y los cierra si siguen sin respuesta.
+#
+# Política configurada:
+#   - Issues:  etiquetado como stale tras 60 días de inactividad
+#   - PRs:     etiquetado como stale tras 30 días de inactividad
+#   - Cierre:  7 días adicionales sin actividad tras el etiquetado
+#
+# Excepciones (nunca se marcan como stale):
+#   - Issues/PRs con las etiquetas: pinned, security, in-progress
+#
+# El workflow se ejecuta una vez al día (medianoche UTC) y también puede
+# dispararse manualmente desde la pestaña "Actions".
+# ============================================================================
+
+name: "Stale Issues and PRs"
+
+on:
+  schedule:
+    # Ejecutar todos los días a medianoche UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    name: "Marcar y cerrar issues/PRs inactivos"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Procesar items inactivos"
+        uses: actions/stale@v9
+        with:
+          # ── Issues ──────────────────────────────────────────────────────────
+          days-before-issue-stale: 60
+          days-before-issue-close: 7
+          stale-issue-label: 'stale'
+          stale-issue-message: >
+            👋 Este issue lleva 60 días sin actividad y ha sido marcado como obsoleto.
+            Si sigue siendo relevante, por favor deja un comentario o elimina la etiqueta `stale`.
+            De lo contrario, será cerrado automáticamente en 7 días.
+          close-issue-message: >
+            🔒 Este issue fue cerrado automáticamente por inactividad.
+            Si el problema persiste, no dudes en abrirlo nuevamente con información actualizada.
+
+          # ── Pull Requests ────────────────────────────────────────────────────
+          days-before-pr-stale: 30
+          days-before-pr-close: 7
+          stale-pr-label: 'stale'
+          stale-pr-message: >
+            👋 Este PR lleva 30 días sin actividad y ha sido marcado como obsoleto.
+            Si todavía está en progreso, por favor deja un comentario o elimina la etiqueta `stale`.
+            De lo contrario, será cerrado automáticamente en 7 días.
+          close-pr-message: >
+            🔒 Este PR fue cerrado automáticamente por inactividad.
+            Si los cambios siguen siendo relevantes, podés reabrirlo o crear uno nuevo.
+
+          # ── Excepciones ──────────────────────────────────────────────────────
+          exempt-issue-labels: 'pinned,security,in-progress'
+          exempt-pr-labels: 'pinned,security,in-progress'
+
+          # Número máximo de operaciones por ejecución (evita agotar el rate limit)
+          operations-per-run: 100
