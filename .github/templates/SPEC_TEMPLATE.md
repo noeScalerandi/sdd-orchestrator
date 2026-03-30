@@ -8,7 +8,7 @@
 
 ## Use Cases
 
-Detailed scenarios in [use-cases.md](.github/templates/USE_CASES_TEMPLATE.md).
+Detailed scenarios in [use-cases.md](/USE_CASES_TEMPLATE.md).
 
 | Use Case | Description | User Stories |
 |----------|-------------|-------------|
