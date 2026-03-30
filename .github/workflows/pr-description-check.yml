@@ -1,16 +1,16 @@
 # ============================================================================
-# VALIDACIÓN DE DESCRIPCIÓN DE PULL REQUESTS
+# PULL REQUEST DESCRIPTION VALIDATION
 # ============================================================================
-# Este workflow verifica que todos los PRs tengan una descripción adecuada
-# antes de ser mergeados. Una buena descripción es fundamental para:
-#   - Facilitar la revisión de código
-#   - Mantener el historial del proyecto comprensible
-#   - Proveer contexto a los agentes de IA que trabajan en el repo
+# This workflow checks that all PRs have an adequate description before
+# being merged. A good description is essential for:
+#   - Facilitating code review
+#   - Keeping the project history understandable
+#   - Providing context to AI agents working on the repo
 #
-# Criterios de validación:
-#   - La descripción no debe estar vacía
-#   - Debe tener al menos 10 caracteres
-#   - Se sugiere (sin fallar) incluir secciones "## What" y "## Why"
+# Validation criteria:
+#   - Description must not be empty
+#   - Must have at least 10 characters
+#   - Suggested (non-blocking) to include "## What" and "## Why" sections
 # ============================================================================
 
 name: "PR Description Check"
@@ -24,10 +24,10 @@ permissions:
 
 jobs:
   check-description:
-    name: "Validar descripción del PR"
+    name: "Validate PR description"
     runs-on: ubuntu-latest
     steps:
-      - name: "Verificar descripción"
+      - name: "Check description"
         uses: actions/github-script@v7
         with:
           script: |
@@ -36,30 +36,30 @@ jobs:
             const trimmed = body.trim();
             const MIN_DESCRIPTION_LENGTH = 10;
 
-            // Validación obligatoria: descripción mínima
+            // Required validation: minimum description
             if (trimmed.length < MIN_DESCRIPTION_LENGTH) {
               const suggestions = `
-            ## ❌ Descripción de PR insuficiente
+            ## ❌ Insufficient PR description
 
-            Este PR necesita una descripción antes de poder ser mergeado.
+            This PR needs a description before it can be merged.
 
-            ### ¿Qué incluir?
+            ### What to include?
 
             \`\`\`markdown
             ## What
-            Breve descripción de los cambios realizados.
+            Brief description of the changes made.
 
             ## Why
-            Motivación o contexto del cambio (issue relacionado, necesidad de negocio, etc.).
+            Motivation or context for the change (related issue, business need, etc.).
 
             ## How to test
-            Pasos para verificar que los cambios funcionan correctamente.
+            Steps to verify that the changes work correctly.
             \`\`\`
 
-            > 💡 Una buena descripción acelera las revisiones y ayuda a los agentes de IA a entender el contexto.
+            > 💡 A good description speeds up reviews and helps AI agents understand the context.
             `;
 
-              // Comentar en el PR con sugerencias
+              // Comment on the PR with suggestions
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -68,13 +68,13 @@ jobs:
               });
 
               core.setFailed(
-                `La descripción del PR está vacía o es muy corta (${trimmed.length} caracteres). ` +
-                `Se requieren al menos ${MIN_DESCRIPTION_LENGTH} caracteres.`
+                `PR description is empty or too short (${trimmed.length} characters). ` +
+                `At least ${MIN_DESCRIPTION_LENGTH} characters are required.`
               );
               return;
             }
 
-            // Validación opcional: secciones recomendadas (solo warning)
+            // Optional validation: recommended sections (warning only)
             const hasWhat = /^#{1,3}\s+what/im.test(trimmed);
             const hasWhy  = /^#{1,3}\s+why/im.test(trimmed);
 
@@ -84,9 +84,9 @@ jobs:
               if (!hasWhy)  missing.push('`## Why`');
 
               core.warning(
-                `Se recomienda incluir las secciones ${missing.join(' y ')} en la descripción del PR ` +
-                'para mejorar la trazabilidad y facilitar las revisiones.'
+                `Consider adding ${missing.join(' and ')} sections to the PR description ` +
+                'to improve traceability and facilitate reviews.'
               );
             }
 
-            console.log(`✅ Descripción válida (${trimmed.length} caracteres).`);
+            console.log(`✅ Valid description (${trimmed.length} characters).`);

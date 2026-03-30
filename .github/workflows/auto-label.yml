@@ -1,15 +1,15 @@
 # ============================================================================
-# ETIQUETADO AUTOMÁTICO DE PULL REQUESTS
+# AUTOMATIC PULL REQUEST LABELING
 # ============================================================================
-# Este workflow clasifica automáticamente los PRs según los archivos
-# modificados, facilitando la navegación y el filtrado en el backlog.
+# This workflow automatically classifies PRs based on the modified files,
+# making it easier to navigate and filter the backlog.
 #
-# Etiquetas aplicadas:
-#   - documentation → cambios en *.md y docs/**
-#   - tests         → cambios en archivos de test
-#   - ci            → cambios en .github/**
-#   - dependencies  → cambios en archivos de dependencias
-#   - config        → cambios en archivos de configuración en la raíz
+# Labels applied:
+#   - documentation → changes in *.md and docs/**
+#   - tests         → changes in test files
+#   - ci            → changes in .github/**
+#   - dependencies  → changes in dependency files
+#   - config        → changes in config files at root level
 # ============================================================================
 
 name: "Auto Label"
@@ -24,10 +24,10 @@ permissions:
 
 jobs:
   label:
-    name: "Etiquetar PR automáticamente"
+    name: "Label PR automatically"
     runs-on: ubuntu-latest
     steps:
-      - name: "Etiquetar según archivos modificados"
+      - name: "Label based on modified files"
         uses: actions/github-script@v7
         with:
           script: |
@@ -40,7 +40,7 @@ jobs:
             const filenames = files.map(f => f.filename);
             const labelsToAdd = new Set();
 
-            // Reglas de etiquetado
+            // Labeling rules
             const rules = [
               {
                 label: 'documentation',
@@ -63,7 +63,7 @@ jobs:
               },
               {
                 label: 'config',
-                // Archivos de configuración en la raíz (excluyendo .github/ que ya cubre 'ci')
+                // Config files at root level (excluding .github/ which is covered by 'ci')
                 patterns: [
                   /^[^/]+\.(yml|yaml|json|toml)$/,
                 ],
@@ -83,7 +83,7 @@ jobs:
 
             if (labelsToAdd.size === 0) return;
 
-            // Asegurarse de que las etiquetas existen antes de aplicarlas
+            // Ensure labels exist before applying them
             for (const label of labelsToAdd) {
               try {
                 await github.rest.issues.getLabel({
@@ -92,7 +92,7 @@ jobs:
                   name: label,
                 });
               } catch (e) {
-                // La etiqueta no existe, la creamos con colores predeterminados
+                // Label doesn't exist, create it with default colors
                 const colors = {
                   documentation: '0075ca',
                   tests: 'e4e669',

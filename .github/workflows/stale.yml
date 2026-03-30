@@ -1,26 +1,26 @@
 # ============================================================================
-# LIMPIEZA DE ISSUES Y PULL REQUESTS INACTIVOS
+# STALE ISSUES AND PULL REQUESTS CLEANUP
 # ============================================================================
-# Este workflow marca automáticamente como "stale" (obsoleto) los issues y
-# PRs que llevan tiempo sin actividad, y los cierra si siguen sin respuesta.
+# This workflow automatically marks issues and PRs as "stale" when they have
+# been inactive for a while, and closes them if there's no further response.
 #
-# Política configurada:
-#   - Issues:  etiquetado como stale tras 60 días de inactividad
-#   - PRs:     etiquetado como stale tras 30 días de inactividad
-#   - Cierre:  7 días adicionales sin actividad tras el etiquetado
+# Configured policy:
+#   - Issues:  labeled as stale after 60 days of inactivity
+#   - PRs:     labeled as stale after 30 days of inactivity
+#   - Closure: 7 additional days without activity after being labeled
 #
-# Excepciones (nunca se marcan como stale):
-#   - Issues/PRs con las etiquetas: pinned, security, in-progress
+# Exceptions (never marked as stale):
+#   - Issues/PRs with labels: pinned, security, in-progress
 #
-# El workflow se ejecuta una vez al día (medianoche UTC) y también puede
-# dispararse manualmente desde la pestaña "Actions".
+# The workflow runs once a day (midnight UTC) and can also be triggered
+# manually from the "Actions" tab.
 # ============================================================================
 
 name: "Stale Issues and PRs"
 
 on:
   schedule:
-    # Ejecutar todos los días a medianoche UTC
+    # Run every day at midnight UTC
     - cron: '0 0 * * *'
   workflow_dispatch:
 
@@ -30,10 +30,10 @@ permissions:
 
 jobs:
   stale:
-    name: "Marcar y cerrar issues/PRs inactivos"
+    name: "Mark and close inactive issues/PRs"
     runs-on: ubuntu-latest
     steps:
-      - name: "Procesar items inactivos"
+      - name: "Process inactive items"
         uses: actions/stale@v9
         with:
           # ── Issues ──────────────────────────────────────────────────────────
@@ -41,28 +41,28 @@ jobs:
           days-before-issue-close: 7
           stale-issue-label: 'stale'
           stale-issue-message: >
-            👋 Este issue lleva 60 días sin actividad y ha sido marcado como obsoleto.
-            Si sigue siendo relevante, por favor deja un comentario o elimina la etiqueta `stale`.
-            De lo contrario, será cerrado automáticamente en 7 días.
+            👋 This issue has been inactive for 60 days and has been marked as stale.
+            If it's still relevant, please leave a comment or remove the `stale` label.
+            Otherwise, it will be automatically closed in 7 days.
           close-issue-message: >
-            🔒 Este issue fue cerrado automáticamente por inactividad.
-            Si el problema persiste, no dudes en abrirlo nuevamente con información actualizada.
+            🔒 This issue was automatically closed due to inactivity.
+            If the problem persists, feel free to reopen it with updated information.
 
           # ── Pull Requests ────────────────────────────────────────────────────
           days-before-pr-stale: 30
           days-before-pr-close: 7
           stale-pr-label: 'stale'
           stale-pr-message: >
-            👋 Este PR lleva 30 días sin actividad y ha sido marcado como obsoleto.
-            Si todavía está en progreso, por favor deja un comentario o elimina la etiqueta `stale`.
-            De lo contrario, será cerrado automáticamente en 7 días.
+            👋 This PR has been inactive for 30 days and has been marked as stale.
+            If it's still in progress, please leave a comment or remove the `stale` label.
+            Otherwise, it will be automatically closed in 7 days.
           close-pr-message: >
-            🔒 Este PR fue cerrado automáticamente por inactividad.
-            Si los cambios siguen siendo relevantes, puedes reabrirlo o crear uno nuevo.
+            🔒 This PR was automatically closed due to inactivity.
+            If the changes are still relevant, you can reopen it or create a new one.
 
-          # ── Excepciones ──────────────────────────────────────────────────────
+          # ── Exceptions ──────────────────────────────────────────────────────
           exempt-issue-labels: 'pinned,security,in-progress'
           exempt-pr-labels: 'pinned,security,in-progress'
 
-          # Número máximo de operaciones por ejecución (evita agotar el rate limit)
+          # Maximum operations per run (prevents exhausting the rate limit)
           operations-per-run: 100

@@ -1,15 +1,15 @@
 # ============================================================================
-# REVISIÓN DE DEPENDENCIAS
+# DEPENDENCY REVIEW
 # ============================================================================
-# Este workflow analiza las dependencias nuevas o actualizadas en cada PR
-# para detectar vulnerabilidades de seguridad conocidas.
+# This workflow analyzes new or updated dependencies in each PR to detect
+# known security vulnerabilities.
 #
-# Comportamiento:
-#   - Falla el check si se detectan vulnerabilidades de severidad ALTA o CRÍTICA
-#   - Emite advertencia (sin fallar) para severidades BAJA y MEDIA
-#   - Compatible con múltiples ecosistemas: npm, pip, Maven, Go, Cargo, etc.
+# Behavior:
+#   - Fails the check if HIGH or CRITICAL severity vulnerabilities are detected
+#   - Emits a warning (without failing) for LOW and MEDIUM severities
+#   - Compatible with multiple ecosystems: npm, pip, Maven, Go, Cargo, etc.
 #
-# Requiere que el repositorio tenga habilitado el Dependency Graph en:
+# Requires Dependency Graph to be enabled in the repository:
 #   Settings → Security → Dependency graph
 # ============================================================================
 
@@ -24,16 +24,16 @@ permissions:
 
 jobs:
   dependency-review:
-    name: "Revisar vulnerabilidades en dependencias"
+    name: "Review dependency vulnerabilities"
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
 
-      - name: "Analizar dependencias"
+      - name: "Analyze dependencies"
         uses: actions/dependency-review-action@v4
         with:
-          # Fallar solo en vulnerabilidades altas o críticas
+          # Fail only on high or critical vulnerabilities
           fail-on-severity: high
-          # Emitir comentario en el PR con el resumen
+          # Post a summary comment on the PR
           comment-summary-in-pr: always
