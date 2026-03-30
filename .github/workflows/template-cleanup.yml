@@ -4,6 +4,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write  # Required for git push
+
 jobs:
   cleanup:
     runs-on: ubuntu-latest
