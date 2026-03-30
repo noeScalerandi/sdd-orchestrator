@@ -77,6 +77,50 @@ El archivo `.github/copilot-instructions.md` contiene las directrices para que G
 
 El directorio `.github/prompts/` contiene prompts reutilizables que pueden ser utilizados por los diferentes agentes para mantener consistencia en las operaciones.
 
+### 🚀 Cómo ejecutar un prompt (sin VS Code)
+
+Puedes ejecutar los prompts directamente en **GitHub Copilot Chat** — sin necesidad de VS Code.
+
+#### Opción 1 — Usando el comando `/` en GitHub Copilot Chat
+
+1. Abre **GitHub Copilot Chat** (en github.com o en tu editor preferido)
+2. Escribe `/` y selecciona el prompt de la lista de sugerencias:
+   - `/brief` → Crear un Product Brief
+   - `/spec` → Convertir un Brief en una Especificación Técnica
+3. Sigue las instrucciones del agente
+
+#### Opción 2 — Referenciando el archivo directamente
+
+En el chat, escribe:
+
+```
+#file:.github/prompts/brief.prompt.md
+
+Quiero crear un brief para la feature: magic-link-login
+```
+
+#### 💡 Ejemplo práctico completo
+
+Aquí tienes un ejemplo de cómo iniciar el flujo SDD completo desde GitHub Copilot Chat:
+
+**Paso 1 — Crear el Brief** (en Copilot Chat, escribe):
+```
+/brief
+```
+El agente Piper (Product Owner 📋) te guiará para documentar la feature.
+
+**Paso 2 — Crear la Especificación Técnica** (en Copilot Chat, escribe):
+```
+/spec
+```
+El agente Archer (Architect 🧠) transformará el brief en una especificación técnica detallada.
+
+**Paso 3 — Implementar el código** (en Copilot Chat, escribe):
+```
+Code magic-link-login
+```
+El agente desarrollador implementará el código siguiendo la especificación.
+
 ## 🎯 Casos de Uso
 
 Este template es ideal para:
