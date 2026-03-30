@@ -1,11 +1,11 @@
 name: "Auto-Deploy Agents"
 on:
-  repository:
-    types: [created] # Se dispara cuando creas un repo nuevo
+  workflow_dispatch:
 
 jobs:
   provision:
     runs-on: ubuntu-latest
+    if: github.repository == 'noeScalerandi/sdd-orchestrator'
     steps:
       - name: Checkout Master Templates
         uses: actions/checkout@v4
