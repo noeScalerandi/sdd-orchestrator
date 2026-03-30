@@ -63,14 +63,20 @@ jobs:
               },
               {
                 label: 'config',
+                // Archivos de configuración en la raíz (excluyendo .github/ que ya cubre 'ci')
                 patterns: [
                   /^[^/]+\.(yml|yaml|json|toml)$/,
                 ],
+                exclude: [/^\.github\//],
               },
             ];
 
             for (const rule of rules) {
-              if (filenames.some(f => rule.patterns.some(p => p.test(f)))) {
+              const matches = filenames.filter(f =>
+                rule.patterns.some(p => p.test(f)) &&
+                !(rule.exclude || []).some(p => p.test(f))
+              );
+              if (matches.length > 0) {
                 labelsToAdd.add(rule.label);
               }
             }

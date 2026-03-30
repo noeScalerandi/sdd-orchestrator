@@ -58,7 +58,7 @@ jobs:
             De lo contrario, será cerrado automáticamente en 7 días.
           close-pr-message: >
             🔒 Este PR fue cerrado automáticamente por inactividad.
-            Si los cambios siguen siendo relevantes, podés reabrirlo o crear uno nuevo.
+            Si los cambios siguen siendo relevantes, puedes reabrirlo o crear uno nuevo.
 
           # ── Excepciones ──────────────────────────────────────────────────────
           exempt-issue-labels: 'pinned,security,in-progress'
