@@ -43,36 +43,36 @@ jobs:
 
           # Replace README.md with a clean starter template
           cat > README.md << EOF
-# ${REPO_NAME}
+          # ${REPO_NAME}
 
-## 📝 Description
+          ## 📝 Description
 
-<!-- TODO: Add a description of your project here -->
+          <!-- TODO: Add a description of your project here -->
 
-This project was created from the [sdd-orchestrator](https://github.com/noeScalerandi/sdd-orchestrator) template.
+          This project was created from the [sdd-orchestrator](https://github.com/noeScalerandi/sdd-orchestrator) template.
 
-## 🚀 Getting Started
+          ## 🚀 Getting Started
 
-### Prerequisites
+          ### Prerequisites
 
-<!-- TODO: List any prerequisites here -->
+          <!-- TODO: List any prerequisites here -->
 
-### Installation
+          ### Installation
 
-<!-- TODO: Add installation instructions -->
+          <!-- TODO: Add installation instructions -->
 
-## 📖 Usage
+          ## 📖 Usage
 
-<!-- TODO: Add usage examples -->
+          <!-- TODO: Add usage examples -->
 
-## 🤝 Contributing
+          ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+          Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📄 License
+          ## 📄 License
 
-<!-- TODO: Add your license information -->
-EOF
+          <!-- TODO: Add your license information -->
+          EOF
 
           git add README.md
           git commit -m "chore: remove template-only workflows and initialize README"
