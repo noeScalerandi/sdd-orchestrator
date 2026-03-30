@@ -1,101 +1,50 @@
-name: 🚀 Initialize Template Repository
+name: "Agent - Universal Best Practices"
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+# Add these permissions
+permissions:
+  contents: read
+  statuses: write
+  pull-requests: write
 
 jobs:
-  initialize:
+  quality-audit:
+    name: "Audit Project Health"
     runs-on: ubuntu-latest
-    # Solo ejecutar si el repo NO es el template original
-    if: github.repository != 'noeScalerandi/sdd-orchestrator'
     
     steps:
-      - name: Checkout repository
+      - name: "1. Checkout Code"
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Check if already initialized
-        id: check
-        run: |
-          if [ -f ".template-initialized" ]; then
-            echo "initialized=true" >> $GITHUB_OUTPUT
-          else
-            echo "initialized=false" >> $GITHUB_OUTPUT
-          fi
+      - name: "2. Check for Secrets (Security)"
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create new README
-        if: steps.check.outputs.initialized == 'false'
+      - name: "3. Universal Linting (Super-Linter)"
+        uses: github/super-linter/slim@v5
+        env:
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "4. Verify Documentation & Structure"
         run: |
-          # Extraer el nombre del repositorio
-          REPO_NAME="${{ github.event.repository.name }}"
-          REPO_OWNER="${{ github.repository_owner }}"
+          echo "Checking for essential files..."
+          MISSING_FILES=()
+          [ ! -f "README.md" ] && MISSING_FILES+=("README.md")
+          [ ! -f "LICENSE" ] && MISSING_FILES+=("LICENSE")
+          [ ! -f ".gitignore" ] && MISSING_FILES+=(".gitignore")
           
-          # Crear un nuevo README personalizado
-          cat > README.md << 'EOF'
-          # ${{ github.event.repository.name }}
-
-          ## 📝 Descripción
-
-          Este proyecto fue creado desde el template [sdd-orchestrator](https://github.com/noeScalerandi/sdd-orchestrator).
-
-          ## 🏗️ Estructura del Proyecto
-
-          Este repositorio incluye:
-
-          - **Subagentes de IA especializados** en `.github/subagents/`
-          - **Workflows automatizados** en `.github/workflows/`
-          - **Instrucciones para GitHub Copilot** en `.github/copilot-instructions.md`
-
-          ## 🚀 Primeros Pasos
-
-          1. Actualiza este README con la información de tu proyecto
-          2. Personaliza los subagentes en `.github/subagents/` según tus necesidades
-          3. Configura los workflows en `.github/workflows/` para tu flujo de trabajo
-          4. Modifica `.github/copilot-instructions.md` según tu stack tecnológico
-
-          ## 🤖 Subagentes Disponibles
-
-          - **🏛️ Architect**: Diseño de arquitectura del sistema
-          - **👨‍💻 Developer**: Implementación de código
-          - **📋 Product Owner**: Gestión de requisitos y backlog
-          - **🧪 QA**: Pruebas y control de calidad
-
-          ## 📚 Documentación
-
-          Para más información sobre cómo usar este sistema de agentes, consulta la [documentación del template original](https://github.com/noeScalerandi/sdd-orchestrator).
-
-          ---
-
-          **Proyecto**: $REPO_OWNER/$REPO_NAME  
-          **Creado desde**: [sdd-orchestrator](https://github.com/noeScalerandi/sdd-orchestrator)
-          EOF
-
-      - name: Mark as initialized
-        if: steps.check.outputs.initialized == 'false'
-        run: |
-          echo "This file marks the repository as initialized from template" > .template-initialized
-          echo "Created: $(date)" >> .template-initialized
-
-      - name: Remove initialization workflow
-        if: steps.check.outputs.initialized == 'false'
-        run: |
-          rm -f .github/workflows/template-init.yml
-
-      - name: Commit changes
-        if: steps.check.outputs.initialized == 'false'
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add README.md .template-initialized
-          git add .github/workflows/ || true
-          git commit -m "🎉 Initialize repository from template
-
-          - Created custom README.md
-          - Marked repository as initialized
-          - Removed initialization workflow" || exit 0
-          git push
+          if [ ${#MISSING_FILES[@]} -gt 0 ]; then
+            echo "::warning title=Missing Best Practice Files::Faltan los siguientes archivos: ${MISSING_FILES[*]}"
+          else
+            echo "All essential files are present. Good job!"
+          fi
